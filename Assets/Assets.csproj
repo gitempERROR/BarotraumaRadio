@@ -7,13 +7,7 @@
         <RootNamespace>ModAssets</RootNamespace>
     </PropertyGroup>
 
-    <Import Project="../Build.props"/>
-    
-    <ItemGroup>
-      <Content Include="..\README.txt">
-        <Link>README.txt</Link>
-      </Content>
-    </ItemGroup>
+    <Import Project="../Build.props" />
 
     <ItemGroup>
       <Folder Include="Content" />

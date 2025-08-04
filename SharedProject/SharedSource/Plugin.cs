@@ -4,19 +4,12 @@ using System.Collections.Immutable;
 using System.Text;
 using Barotrauma;
 
-[assembly: IgnoresAccessChecksTo("Barotrauma")]
-[assembly: IgnoresAccessChecksTo("DedicatedServer")]
-[assembly: IgnoresAccessChecksTo("BarotraumaCore")]
-
-namespace MyModName
+namespace BarotraumaRadio
 {
     public partial class Plugin : IAssemblyPlugin
     {
         public void Initialize()
         {
-            // When your plugin is loading, use this instead of the constructor
-            // Put any code here that does not rely on other plugins.
-            throw new NotImplementedException();
         }
 
         public void OnLoadCompleted()

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Barotrauma;
+using Barotrauma.Sounds;
 
-namespace MyModName
+namespace BarotraumaRadio
 {
     public partial class Plugin : IAssemblyPlugin
     {
-        // Client-specific code
     }
 }
