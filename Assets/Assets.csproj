@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <Import Project="../Build.props" />
-
-    <ItemGroup>
-      <Folder Include="Content" />
-    </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build">
         <ItemGroup>

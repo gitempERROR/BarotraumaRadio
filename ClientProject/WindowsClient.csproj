@@ -25,6 +25,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.9.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\Refs\0Harmony.dll</HintPath>
     </Reference>
@@ -47,7 +51,7 @@
       <HintPath>..\Refs\MonoGame.Framework.Windows.NetStandard.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.Common">
-      <HintPath>..\Refs\MonoMod.Common.dll</HintPath>
+      <HintPath>..\Refs\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="MoonSharp.Interpreter">
       <HintPath>..\Refs\MoonSharp.Interpreter.dll</HintPath>
@@ -72,15 +76,5 @@
     <Copy SourceFiles="@(Assemblies)" DestinationFiles="$(ModDeployDir)bin\Client\Windows\$(TargetName).dll" />
     <Copy SourceFiles="@(DepsFiles)" DestinationFiles="$(ModDeployDir)bin\Client\Windows\$(TargetName).deps.json" />
   </Target>
-
-	<ItemGroup>
-		<Content Include="libvlc\**">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="LibVLCSharp" Version="3.6.6" />
-	</ItemGroup>
 
 </Project>

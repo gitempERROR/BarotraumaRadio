@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+	<Item name="Radio" identifier="radio" category="Electrical" Tags="powered" maxstacksize="1" cargocontaineridentifier="metalcrate" description="" scale="0.5" impactsoundtag="impact_metal_heavy" isshootable="true">
+		<Price baseprice="760" minleveldifficulty="15">
+			<Price storeidentifier="merchantoutpost" />
+			<Price storeidentifier="merchantcity" sold="false" />
+			<Price storeidentifier="merchantresearch" multiplier="1.25" />
+			<Price storeidentifier="merchantmilitary" />
+			<Price storeidentifier="merchantmine" />
+			<Price storeidentifier="merchantengineering" multiplier="0.9" />
+		</Price>
+		<PreferredContainer primary="engcab" />
+		<PreferredContainer secondary="wreckengcab,abandonedengcab,outpostengcab,beaconengcab" amount="1" spawnprobability="0.05" />
+		<Deconstruct time="10">
+			<Item identifier="fpgacircuit" />
+			<Item identifier="copper" />
+			<Item identifier="iron" />
+		</Deconstruct>
+		<Fabricate suitablefabricators="fabricator" requiredtime="1">
+			<RequiredSkill identifier="electrical" level="1" />
+			<RequiredItem identifier="fpgacircuit" />
+			<RequiredItem identifier="copper" />
+			<RequiredItem identifier="iron" />
+		</Fabricate>
+		<InventoryIcon texture="Radio.png" sourcerect="0,0,146,117" origin="0.5,0.5" />
+		<Sprite texture="Radio.png" depth="0.8" sourcerect="0,0,146,117" origin="0.5,0.5" canflipx="false" />
+		<Body width="146" height="117" density="15" />
+		<Holdable selectkey="Select" pickkey="Use" aimpos="65,-10" handle1="0,0" attachable="true" aimable="true" PickingTime="5.0" slots="Any,RightHand,LeftHand" msg="ItemMsgDetachWrench">
+			<StatusEffect type="OnSpawn" target="This" stackable="false">
+				<LuaHook name="radio.spawn" />
+			</StatusEffect>
+			<RequiredItem items="wrench" type="Equipped" />
+		</Holdable>
+		<ConnectionPanel selectkey="Action" canbeselected="true" msg="ItemMsgRewireScrewdriver" hudpriority="10">
+			<GuiFrame relativesize="0.2,0.32" minsize="400,350" maxsize="480,420" anchor="Center" style="ConnectionPanel" />
+			<RequiredItem items="screwdriver" type="Equipped" />
+			<input name="set_state" displayname="connection.set_state" />
+			<input name="switch_channel" displayname="connection.switch_channel"/>
+			<input name="power_in" displayname="connection.power_in"/>
+		</ConnectionPanel>
+		<Powered powerconsumption="100" currpowerconsumption="100" isactive="true"/>
+	</Item>
+</Items>

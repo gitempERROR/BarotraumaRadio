@@ -1,10 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LibVLCSharp" Version="3.9.4" />
+    </ItemGroup>
 
     <ItemGroup>
       <Reference Include="0Harmony">
@@ -29,7 +33,7 @@
         <HintPath>..\Refs\MonoGame.Framework.MacOS.NetStandard.dll</HintPath>
       </Reference>
       <Reference Include="MonoMod.Common">
-        <HintPath>..\Refs\MonoMod.Common.dll</HintPath>
+        <HintPath>..\Refs\MonoMod.Utils.dll</HintPath>
       </Reference>
       <Reference Include="MoonSharp.Interpreter">
         <HintPath>..\Refs\MoonSharp.Interpreter.dll</HintPath>

@@ -1,18 +1,12 @@
 ﻿using Barotrauma;
 using Barotrauma.Items.Components;
-using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
 using System.Globalization;
 
-namespace BarotraumaRadio.ClientSource
+namespace BarotraumaRadio.ServerSource
 {
     public class Radio : ItemComponent
     {
         private const int INPUT_COUNT = 3;
-
-        private BufferSound radioSound;
-
-        private SoundChannel radioChannel;
 
         private bool radioEnabled = false;
 
@@ -22,39 +16,21 @@ namespace BarotraumaRadio.ClientSource
         };
 
         private int radioArrayIndex = 0;
-        private bool isPowered = true;
+        private bool isPowered = false;
 
-        private bool RadioEnabled
+        private bool RadioEnabled 
         {
-            set
+            set 
             {
                 if (radioEnabled == value || !isPowered)
                 {
                     return;
                 }
                 radioEnabled = value;
-                if (value)
-                {
-                    Play(radioArray[radioArrayIndex]);
-                }
-                else
-                {
-                    Stop();
-                }
             }
         }
 
         protected readonly Character[] signalSender;
-
-        public void Play(string stationUrl)
-        {
-#if CLIENT
-            radioSound = new BufferSound(GameMain.SoundManager, "RadioStream", true, true, stationUrl);
-            radioChannel = SoundPlayer.PlaySound(sound: radioSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.5f, 1, ignoreMuffling: false);
-            radioChannel.IsStream = true;
-            radioChannel.Looping = true;
-#endif
-        }
 
         public void ChangeState(bool active)
         {
@@ -92,14 +68,6 @@ namespace BarotraumaRadio.ClientSource
                     break;
                 }
             }
-        }
-
-        public void Stop()
-        {
-#if CLIENT
-            radioSound.Dispose();
-            radioChannel.Dispose();
-#endif
         }
     }
 }

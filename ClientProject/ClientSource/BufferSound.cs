@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Barotrauma;
 using Barotrauma.Sounds;
+using OpenAL;
+using static Barotrauma.PetBehavior.ItemProduction;
 
 namespace BarotraumaRadio.ClientSource
 {
@@ -29,11 +31,14 @@ namespace BarotraumaRadio.ClientSource
                 xElement)
         {
             bufferPlayer = new();
+            SampleRate = 44100;
+            ALFormat = Al.FormatStereo16;
             bufferPlayer.Play(stationUrl);
         }
 
         public override int FillStreamBuffer(int samplePos, short[] buffer)
         {
+            
             int result = bufferPlayer.ReadPcmData(buffer, 88200 * 4);
             return result;
         }

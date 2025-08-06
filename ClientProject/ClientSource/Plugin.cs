@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 using Barotrauma;
-using Barotrauma.Sounds;
+using BarotraumaRadio.ClientSource;
 
 namespace BarotraumaRadio
 {
     public partial class Plugin : IAssemblyPlugin
     {
+        public void InitClient()
+        {
+            InjectComponent<Radio>("Radio");
+        }
     }
 }

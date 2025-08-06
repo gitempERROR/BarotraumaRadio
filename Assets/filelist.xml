@@ -1,3 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<contentpackage name="BarotraumaRadio" modversion="1.0" corepackage="false">
+<contentpackage name="BarotraumaRadio" modversion="1.0" corepackage="false" gameversion="1.2.8.0" installtime="1">
+	<Item file="%ModDir%/Content/Items/Electricity/items.xml" />
 </contentpackage>

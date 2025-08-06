@@ -1,10 +1,7 @@
-﻿using LibVLCSharp.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Barotrauma;
+using LibVLCSharp.Shared;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BarotraumaRadio.ClientSource
 {
@@ -18,7 +15,25 @@ namespace BarotraumaRadio.ClientSource
 
         public BufferPlayer()
         {
-            Core.Initialize();
+            string modPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string vlcPath = Path.Combine(modPath, "../../../Content/libvlc/win-x64");
+
+            // Проверка существования пути
+            if (!Directory.Exists(vlcPath))
+            {
+                DebugConsole.Log($"ОШИБКА: Путь не найден: {vlcPath}");
+            }
+            else
+            {
+                DebugConsole.Log($"VLC путь: {vlcPath}");
+
+                // Проверка наличия ключевых файлов
+                DebugConsole.Log($"libvlc.dll exists: {File.Exists(Path.Combine(vlcPath, "libvlc.dll"))}");
+                DebugConsole.Log($"plugins exists: {Directory.Exists(Path.Combine(vlcPath, "plugins"))}");
+
+                // Инициализация
+                Core.Initialize(vlcPath);
+            }
             _libVLC = new LibVLC();
             _mediaPlayer = new MediaPlayer(_libVLC);
 
@@ -28,9 +43,9 @@ namespace BarotraumaRadio.ClientSource
 
         public void LogPlayerState()
         {
-            Console.WriteLine($"State: {_mediaPlayer.State}");
-            Console.WriteLine($"IsPlaying: {_mediaPlayer.IsPlaying}");
-            Console.WriteLine($"Media: {_mediaPlayer.Media?.Mrl}");
+            DebugConsole.Log($"State: {_mediaPlayer.State}");
+            DebugConsole.Log($"IsPlaying: {_mediaPlayer.IsPlaying}");
+            DebugConsole.Log($"Media: {_mediaPlayer.Media?.Mrl}");
         }
 
         private void PlayCallback(IntPtr opaque, IntPtr samples, uint count, long pts)

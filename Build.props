@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!-- IMPORTANT: Should point to <Barotrauma_Install>\LocalMods\<MyModName>\ -->
         <!-- IMPORTANT: ModDeplyDir Path must end with '\' -->
-        <ModDeployDir>F:\GAMES\Steam\steamapps\common\Barotrauma\LocalMods\</ModDeployDir>
+        <ModDeployDir>F:\GAMES\Steam\steamapps\common\Barotrauma\LocalMods\RadioMod\</ModDeployDir>
         <!-- IMPORTANT: Avoid the use of special (IE: / : ; , \ < > ?) (periods "." are good) and non-english characters in the AssemblyName.-->
         <AssemblyName>BarotraumaRadio</AssemblyName>
     </PropertyGroup>
