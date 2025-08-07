@@ -58,15 +58,6 @@ namespace BarotraumaRadio.ServerSource
                 {
                     break;
                 }
-                case "power_in":
-                {
-                    isPowered = value != 0f;
-                    if (value == 0f)
-                    {
-                        ChangeState(false);
-                    }
-                    break;
-                }
             }
         }
     }

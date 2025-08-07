@@ -15,18 +15,16 @@
 			<Item identifier="fpgacircuit" />
 			<Item identifier="copper" />
 			<Item identifier="iron" />
-			<Item identifier="rubber" />
 		</Deconstruct>
 		<Fabricate suitablefabricators="fabricator" requiredtime="30">
 			<RequiredSkill identifier="electrical" level="30" />
 			<RequiredItem identifier="fpgacircuit" />
 			<RequiredItem identifier="copper" />
 			<RequiredItem identifier="iron" />
-			<RequiredItem identifier="rubber" />
 		</Fabricate>
 		<InventoryIcon texture="Radio.png" sourcerect="0,0,112,97" origin="0.5,0.5" />
 		<Sprite texture="Radio.png" depth="0.8" sourcerect="0,0,112,97" origin="0.5,0.5" canflipx="false" />
-		<Body width="146" height="117" density="15" />
+		<Body width="112" height="97" density="15" />
 		<Holdable selectkey="Select" pickkey="Use" aimpos="65,-10" handle1="0,0" attachable="true" aimable="true" PickingTime="5.0" slots="Any,RightHand,LeftHand" msg="ItemMsgDetachWrench">
 			<StatusEffect type="OnSpawn" target="This" stackable="false">
 				<LuaHook name="radio.spawn" />
@@ -39,5 +37,6 @@
 			<input name="set_state" displayname="connection.set_state" />
 			<input name="switch_channel" displayname="connection.switch_channel"/>
 		</ConnectionPanel>
+		<Powered powerconsumption="100" currpowerconsumption="100" isactive="true"/>
 	</Item>
 </Items>

@@ -92,8 +92,6 @@ namespace BarotraumaRadio
 
         public void Dispose()
         {
-            // Cleanup your plugin!
-            throw new NotImplementedException();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace BarotraumaRadio.ClientSource
 {
     public class Radio : ItemComponent, IDisposable
     {
-        private const int INPUT_COUNT = 3;
+        private const int INPUT_COUNT = 2;
 
         private BufferSound radioSound;
 
