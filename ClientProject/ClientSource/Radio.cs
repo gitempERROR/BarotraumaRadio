@@ -6,36 +6,55 @@ using System.Globalization;
 
 namespace BarotraumaRadio.ClientSource
 {
-    public class Radio : ItemComponent
+    public class Radio : ItemComponent, IDisposable
     {
         private const int INPUT_COUNT = 3;
 
         private BufferSound radioSound;
 
-        private SoundChannel radioChannel;
+        private SoundChannel? radioChannel;
 
         private bool radioEnabled = false;
 
-        private string[] radioArray =
+        private readonly string[] radioArray =
         {
-            "https://pool.anison.fm/AniSonFM(320)"
+            "https://pool.anison.fm/AniSonFM(320)",
+            "http://radio.truckers.fm",
+            "http://stream.radioparadise.com/flacm",
+            "http://ice1.somafm.com/groovesalad-256-mp3",
+            "http://kexp-mp3-128.streamguys1.com/kexp128.mp3",
+            "http://stream.srg-ssr.ch/m/rsj/mp3_128",
+            "http://media-ssl.musicradio.com/ClassicFM",
+            "http://sc5.radiocaroline.net:8040/stream"
+        };
+        private readonly string[] radioNamesArray =
+{
+            "AniSonFM",
+            "truckers.fm",
+            "radioparadise.com",
+            "somafm",
+            "kexp",
+            "srg-ssr",
+            "ClassicFM",
+            "radiocaroline"
         };
 
         private int radioArrayIndex = 0;
-        private bool isPowered = true;
+
+        private readonly int range = 900;
 
         private bool RadioEnabled
         {
             set
             {
-                if (radioEnabled == value || !isPowered)
+                if (radioEnabled == value)
                 {
                     return;
                 }
                 radioEnabled = value;
                 if (value)
                 {
-                    Play(radioArray[radioArrayIndex]);
+                    new Thread(delegate() { Play(radioArray[radioArrayIndex]); }).Start();
                 }
                 else
                 {
@@ -49,11 +68,44 @@ namespace BarotraumaRadio.ClientSource
         public void Play(string stationUrl)
         {
 #if CLIENT
-            radioSound = new BufferSound(GameMain.SoundManager, "RadioStream", true, true, stationUrl);
-            radioChannel = SoundPlayer.PlaySound(sound: radioSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.5f, 1, ignoreMuffling: false);
-            radioChannel.IsStream = true;
-            radioChannel.Looping = true;
+            try
+            {
+                GUI.AddMessage($"Now playing {radioNamesArray[radioArrayIndex]}", Color.Orange, new Vector2(Item.WorldPositionX, Item.WorldPositionY - 20), Vector2.Zero);
+                radioSound = new BufferSound(GameMain.SoundManager, "RadioStream", true, true, stationUrl);
+                
+                radioChannel = SoundPlayer.PlaySound(sound: radioSound, item.WorldPosition, volume: 0.9f, ignoreMuffling: false, range: range);
+                if (radioChannel != null)
+                {
+                    radioChannel.FilledByNetwork = true;
+                    radioChannel.IsStream = true;
+                    radioChannel.Looping = true;
+                }
+            }
+            catch (Exception e)
+            {
+                LuaCsSetup.PrintCsError(e);
+            }
 #endif
+        }
+
+        public void SwitchChannel()
+        {
+            if (++radioArrayIndex == radioArray.Length)
+            {
+                radioArrayIndex = 0;
+            }
+            new Thread(delegate () { RestartRadio(); }).Start();
+        }
+
+        public void RestartRadio()
+        {
+            Thread.Sleep(100);
+            if (radioChannel != null)
+            {
+                RadioEnabled = false;
+                Thread.Sleep(100);
+                RadioEnabled = true;
+            }
         }
 
         public void ChangeState(bool active)
@@ -80,15 +132,7 @@ namespace BarotraumaRadio.ClientSource
                 }
                 case "switch_channel":
                 {
-                    break;
-                }
-                case "power_in":
-                {
-                    isPowered = value != 0f;
-                    if (value == 0f)
-                    {
-                        ChangeState(false);
-                    }
+                    SwitchChannel();
                     break;
                 }
             }
@@ -98,8 +142,13 @@ namespace BarotraumaRadio.ClientSource
         {
 #if CLIENT
             radioSound.Dispose();
-            radioChannel.Dispose();
+            radioChannel?.Dispose();
 #endif
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }

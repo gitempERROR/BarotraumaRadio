@@ -37,7 +37,7 @@ namespace BarotraumaRadio.ClientSource
             _libVLC = new LibVLC();
             _mediaPlayer = new MediaPlayer(_libVLC);
 
-            _mediaPlayer.SetAudioFormat("S16N", 44100, 2);
+            _mediaPlayer.SetAudioFormat("S16N", 44100, 1);
             _mediaPlayer.SetAudioCallbacks(PlayCallback, null, null, null, null);
         }
 
@@ -50,31 +50,30 @@ namespace BarotraumaRadio.ClientSource
 
         private void PlayCallback(IntPtr opaque, IntPtr samples, uint count, long pts)
         {
-            int bytes = (int)count * 2 * 2;
+            int bytes = (int)count * 2;
             byte[] buffer = new byte[bytes];
             Marshal.Copy(samples, buffer, 0, bytes);
             _pcmBuffer.Write(buffer);
         }
 
-        public int ReadPcmData(short[] outputBuffer, int samplesRequested)
+        public int ReadPcmData(short[] outputBuffer, int maxSamples)
         {
-            int bytesRequested = samplesRequested * 2;
+            int bytesRequested = maxSamples * 2; // 2 байта на сэмпл (16 бит)
             byte[] byteBuffer = new byte[bytesRequested];
             int bytesRead = _pcmBuffer.Read(byteBuffer, 0, bytesRequested);
-            Buffer.BlockCopy(byteBuffer, 0, outputBuffer, 0, bytesRead);
 
-            return bytesRead / 2;
+            Buffer.BlockCopy(byteBuffer, 0, outputBuffer, 0, bytesRead);
+            return bytesRead / 2; // Возвращаем количество прочитанных сэмплов
         }
 
         public async void Play(string url)
         {
-            string streamUrl = url;
-            if (string.IsNullOrEmpty(streamUrl))
-            {
-                return;
-            }
+            using Media media = new Media(_libVLC, url, FromType.FromLocation);
 
-            using Media media = new Media(_libVLC, streamUrl, FromType.FromLocation);
+            // Добавьте параметры буферизации
+            media.AddOption(":network-caching=500"); // 500 мс буферизации
+            media.AddOption(":live-caching=500");
+
             _mediaPlayer.Play(media);
         }
 

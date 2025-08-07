@@ -16,7 +16,7 @@ namespace BarotraumaRadio.ServerSource
         };
 
         private int radioArrayIndex = 0;
-        private bool isPowered = false;
+        private bool isPowered = true;
 
         private bool RadioEnabled 
         {
