@@ -38,6 +38,8 @@
 			<input name="switch_channel" displayname="connection.switch_channel"/>
 			<input name="power_in" displayname="connection.power_in"/>
 		</ConnectionPanel>
-		<Powered powerconsumption="100" currpowerconsumption="100" isactive="true"/>
+		<Powered powerconsumption="50" currpowerconsumption="50" isactive="true">
+			<GuiFrame relativesize="0.18,0.15" minsize="350,160" maxsize="420,192" anchor="Center" relativeoffset="0,-0.1" style="ItemUI" msg="ItemMsgInteractSelect" />
+		</Powered>
 	</Item>
 </Items>

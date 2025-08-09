@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace BarotraumaRadio.ClientSource
 {
-    public class Radio : Powered, IDisposable
+    public class Radio : ItemComponent, IDisposable
     {
         private readonly ContentXElement contentXElement;
 
@@ -40,6 +40,8 @@ namespace BarotraumaRadio.ClientSource
 
         private bool radioEnabled = false;
 
+        private Powered? powered;
+
         public bool RadioEnabled
         {
             get 
@@ -48,7 +50,12 @@ namespace BarotraumaRadio.ClientSource
             }
             private set
             {
-                if (radioEnabled == value || !HasPower)
+                powered = item.GetComponent<Powered>();
+                if (powered == null)
+                {
+                    LuaCsSetup.PrintCsError($"Error Getting power component");
+                }
+                if (radioEnabled == value || powered != null && !powered.HasPower)
                 {
                     return;
                 }
