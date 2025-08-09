@@ -7,9 +7,9 @@ namespace BarotraumaRadio.ClientSource
 {
     public class BufferPlayer : IDisposable
     {
-        private LibVLC _libVLC;
-        private MediaPlayer _mediaPlayer;
-        private static int _bufferSize = 88200 * 4;
+        private readonly LibVLC         _libVLC;
+        private readonly MediaPlayer    _mediaPlayer;
+        private readonly static int     _bufferSize = 88200 * 4;
         private readonly CircularBuffer _pcmBuffer = new(_bufferSize);
         private bool _disposed;
 
@@ -18,20 +18,17 @@ namespace BarotraumaRadio.ClientSource
             string modPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string vlcPath = Path.Combine(modPath, "../../../Content/libvlc/win-x64");
 
-            // Проверка существования пути
             if (!Directory.Exists(vlcPath))
             {
-                DebugConsole.Log($"ОШИБКА: Путь не найден: {vlcPath}");
+                LuaCsSetup.PrintCsError($"ОШИБКА: Путь не найден: {vlcPath}");
             }
             else
             {
-                DebugConsole.Log($"VLC путь: {vlcPath}");
+                LuaCsSetup.PrintCsMessage($"VLC путь: {vlcPath}");
 
-                // Проверка наличия ключевых файлов
-                DebugConsole.Log($"libvlc.dll exists: {File.Exists(Path.Combine(vlcPath, "libvlc.dll"))}");
-                DebugConsole.Log($"plugins exists: {Directory.Exists(Path.Combine(vlcPath, "plugins"))}");
+                LuaCsSetup.PrintCsMessage($"libvlc.dll exists: {File.Exists(Path.Combine(vlcPath, "libvlc.dll"))}");
+                LuaCsSetup.PrintCsMessage($"plugins exists: {Directory.Exists(Path.Combine(vlcPath, "plugins"))}");
 
-                // Инициализация
                 Core.Initialize(vlcPath);
             }
             _libVLC = new LibVLC();
@@ -39,13 +36,6 @@ namespace BarotraumaRadio.ClientSource
 
             _mediaPlayer.SetAudioFormat("S16N", 44100, 1);
             _mediaPlayer.SetAudioCallbacks(PlayCallback, null, null, null, null);
-        }
-
-        public void LogPlayerState()
-        {
-            DebugConsole.Log($"State: {_mediaPlayer.State}");
-            DebugConsole.Log($"IsPlaying: {_mediaPlayer.IsPlaying}");
-            DebugConsole.Log($"Media: {_mediaPlayer.Media?.Mrl}");
         }
 
         private void PlayCallback(IntPtr opaque, IntPtr samples, uint count, long pts)
@@ -66,14 +56,14 @@ namespace BarotraumaRadio.ClientSource
             return bytesRead / 2; // Возвращаем количество прочитанных сэмплов
         }
 
-        public async void Play(string url)
+        public void Play(string url)
         {
-            using Media media = new Media(_libVLC, url, FromType.FromLocation);
+            using Media media = new(_libVLC, url, FromType.FromLocation);
 
             // Добавьте параметры буферизации
             media.AddOption(":network-caching=500"); // 500 мс буферизации
             media.AddOption(":live-caching=500");
-
+            _mediaPlayer.Volume = 125;
             _mediaPlayer.Play(media);
         }
 

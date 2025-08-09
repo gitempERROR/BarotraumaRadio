@@ -8,13 +8,7 @@ namespace BarotraumaRadio.ClientSource
 {
     public class Radio : ItemComponent, IDisposable
     {
-        private const int INPUT_COUNT = 2;
-
-        private BufferSound radioSound;
-
-        private SoundChannel? radioChannel;
-
-        private bool radioEnabled = false;
+        private readonly ContentXElement contentXElement;
 
         private readonly string[] radioArray =
         {
@@ -41,11 +35,19 @@ namespace BarotraumaRadio.ClientSource
 
         private int radioArrayIndex = 0;
 
-        private readonly int range = 900;
+        private float volume = 1.0f;
 
-        private bool RadioEnabled
+        private bool radioRestarting = false;
+
+        private bool radioEnabled = false;
+
+        public bool RadioEnabled
         {
-            set
+            get 
+            { 
+                return radioEnabled; 
+            }
+            private set
             {
                 if (radioEnabled == value)
                 {
@@ -54,7 +56,7 @@ namespace BarotraumaRadio.ClientSource
                 radioEnabled = value;
                 if (value)
                 {
-                    new Thread(delegate() { Play(radioArray[radioArrayIndex]); }).Start();
+                    new Thread(Play).Start();
                 }
                 else
                 {
@@ -63,23 +65,27 @@ namespace BarotraumaRadio.ClientSource
             }
         }
 
-        protected readonly Character[] signalSender;
+        [Serialize(1.0f, IsPropertySaveable.Yes, description: "The volume of the radio.")]
+        public float Volume
+        {
+            get => volume;
+            set => volume = MathHelper.Clamp(value, 0f, 1f);
+        }
 
-        public void Play(string stationUrl)
+        public Radio(Item item, ContentXElement element) : base(item, element)
+        {
+            contentXElement = element;
+            contentXElement.Element.SetAttributeValue("volume", 1.0f);
+        }
+
+        public void Play()
         {
 #if CLIENT
             try
             {
-                GUI.AddMessage($"Now playing {radioNamesArray[radioArrayIndex]}", Color.Orange, new Vector2(Item.WorldPositionX, Item.WorldPositionY - 20), Vector2.Zero);
-                radioSound = new BufferSound(GameMain.SoundManager, "RadioStream", true, true, stationUrl);
-                
-                radioChannel = SoundPlayer.PlaySound(sound: radioSound, item.WorldPosition, volume: 0.9f, ignoreMuffling: false, range: range);
-                if (radioChannel != null)
-                {
-                    radioChannel.FilledByNetwork = true;
-                    radioChannel.IsStream = true;
-                    radioChannel.Looping = true;
-                }
+                GUI.AddMessage($"Now playing {radioNamesArray[radioArrayIndex]}", Color.Orange, new Vector2(Item.WorldPositionX, Item.WorldPositionY + 15), Vector2.Zero);
+
+                PlayItemSound();
             }
             catch (Exception e)
             {
@@ -88,35 +94,58 @@ namespace BarotraumaRadio.ClientSource
 #endif
         }
 
+        private void PlayItemSound()
+        {
+            BufferSound radioSound = new(GameMain.SoundManager, "RadioStream", stream: true, streamsReliably: true, radioArray[radioArrayIndex]);
+            RoundSound  roundSound = new(contentXElement, radioSound);
+            ItemSound   itemSound  = new(roundSound, ActionType.Always, loop: true, onlyPlayInSameSub: false)
+            {
+                VolumeProperty = "Volume".ToIdentifier()
+            };
+            SetParentFields(itemSound);
+            PlaySound(itemSound.Type, GameMain.Client.Character);
+        }
+
+        private void SetParentFields(ItemSound itemSound)
+        {
+            sounds.Add(itemSound.Type, [itemSound]);
+            loopingSound = itemSound;
+            soundSelectionModes = new Dictionary<ActionType, SoundSelectionMode>
+            {
+                { itemSound.Type, SoundSelectionMode.ItemSpecific }
+            };
+            hasSoundsOfType[(int)itemSound.Type] = true;
+        }
+
+        private void ClearParentFields(ActionType type)
+        {
+            sounds?.Remove(type);
+            soundSelectionModes?.Remove(type);
+            hasSoundsOfType[(int)type] = false;
+        }
+
         public void SwitchChannel()
         {
             if (++radioArrayIndex == radioArray.Length)
             {
                 radioArrayIndex = 0;
             }
-            new Thread(delegate () { RestartRadio(); }).Start();
+            new Thread(RestartRadio).Start();
         }
 
         public void RestartRadio()
         {
-            Thread.Sleep(100);
-            if (radioChannel != null)
+            if (loopingSoundChannel != null && !radioRestarting)
             {
+                radioRestarting = true;
+
+                Thread.Sleep(100);
                 RadioEnabled = false;
                 Thread.Sleep(100);
                 RadioEnabled = true;
+
+                radioRestarting = false;
             }
-        }
-
-        public void ChangeState(bool active)
-        {
-            RadioEnabled = active;
-        }
-
-        public Radio(Item item, ContentXElement element)
-            :base(item, element)
-        {
-            signalSender = new Character[INPUT_COUNT];
         }
 
         public override void ReceiveSignal(Signal signal, Connection connection)
@@ -127,7 +156,7 @@ namespace BarotraumaRadio.ClientSource
             {
                 case "set_state":
                 {
-                    ChangeState(value != 0f);
+                    RadioEnabled = value != 0f;
                     break;
                 }
                 case "switch_channel":
@@ -141,8 +170,13 @@ namespace BarotraumaRadio.ClientSource
         public void Stop()
         {
 #if CLIENT
-            radioSound.Dispose();
-            radioChannel?.Dispose();
+            ActionType type = ActionType.Always;
+            if (loopingSound != null)
+            {
+                type = loopingSound.Type;
+            }
+            StopSounds(type);
+            ClearParentFields(type);
 #endif
         }
 

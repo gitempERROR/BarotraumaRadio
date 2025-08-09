@@ -9,9 +9,9 @@ namespace BarotraumaRadio.ClientSource
     public class CircularBuffer
     {
         private readonly byte[] _buffer;
-        private int _head; // Индекс записи
-        private int _tail; // Индекс чтения
-        private int _count; // Текущее количество байт
+        private int _head; 
+        private int _tail;
+        private int _count;
         private readonly object _lock = new();
 
         public CircularBuffer(int capacity)
@@ -31,7 +31,7 @@ namespace BarotraumaRadio.ClientSource
                     if (_count < _buffer.Length)
                         _count++;
                     else
-                        _tail = (_tail + 1) % _buffer.Length; // Перезапись старых данных
+                        _tail = (_tail + 1) % _buffer.Length; 
                 }
             }
         }
