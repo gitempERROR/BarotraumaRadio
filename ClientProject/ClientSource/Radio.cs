@@ -1,12 +1,11 @@
 ﻿using Barotrauma;
 using Barotrauma.Items.Components;
-using Barotrauma.Sounds;
 using Microsoft.Xna.Framework;
 using System.Globalization;
 
 namespace BarotraumaRadio.ClientSource
 {
-    public class Radio : ItemComponent, IDisposable
+    public class Radio : Powered, IDisposable
     {
         private readonly ContentXElement contentXElement;
 
@@ -35,7 +34,7 @@ namespace BarotraumaRadio.ClientSource
 
         private int radioArrayIndex = 0;
 
-        private float volume = 1.0f;
+        private float volume = 0.85f;
 
         private bool radioRestarting = false;
 
@@ -49,7 +48,7 @@ namespace BarotraumaRadio.ClientSource
             }
             private set
             {
-                if (radioEnabled == value)
+                if (radioEnabled == value || !HasPower)
                 {
                     return;
                 }
@@ -76,6 +75,7 @@ namespace BarotraumaRadio.ClientSource
         {
             contentXElement = element;
             contentXElement.Element.SetAttributeValue("volume", 1.0f);
+            contentXElement.Element.SetAttributeValue("range", 2400.0f);
         }
 
         public void Play()

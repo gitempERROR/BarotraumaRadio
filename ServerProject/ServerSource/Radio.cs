@@ -4,25 +4,17 @@ using System.Globalization;
 
 namespace BarotraumaRadio.ServerSource
 {
-    public class Radio : ItemComponent
+    public class Radio : Powered
     {
         private const int INPUT_COUNT = 3;
 
         private bool radioEnabled = false;
 
-        private string[] radioArray =
-        {
-            "https://pool.anison.fm/AniSonFM(320)"
-        };
-
-        private int radioArrayIndex = 0;
-        private bool isPowered = true;
-
         private bool RadioEnabled 
         {
             set 
             {
-                if (radioEnabled == value || !isPowered)
+                if (radioEnabled == value || !HasPower)
                 {
                     return;
                 }
